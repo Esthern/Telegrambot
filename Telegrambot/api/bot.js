@@ -1,17 +1,15 @@
 // /api/bot.js
 export default function handler(req, res) {
-  const { message } = req.body;
-  const chatId = message.chat.id;
-  const text = message.text ? message.text.toLowerCase() : '';
-  const callbackQuery = req.body.callback_query;
-  
+  const { message, callback_query } = req.body;
+  const chatId = message ? message.chat.id : callback_query.from.id;
   let responseText = '';
   let inlineKeyboard = [];
 
-  // Si el usuario hace clic en un botón de pasillo
-  if (callbackQuery) {
-    const pasillo = callbackQuery.data;
+  if (callback_query) {
+    // Si el usuario hace clic en un botón (callback_query)
+    const pasillo = callback_query.data;
 
+    // Responder con los productos del pasillo seleccionado
     if (pasillo === 'pasillo1') {
       responseText = 'Pasillo 1:\n- Carne\n- Queso\n- Jamón';
     } else if (pasillo === 'pasillo2') {
@@ -26,7 +24,7 @@ export default function handler(req, res) {
       responseText = 'Pasillo no encontrado';
     }
 
-    // Responde con los productos del pasillo seleccionado
+    // Asegurarse de responder a Telegram
     const url = `https://api.telegram.org/bot<YOUR_BOT_API_TOKEN>/sendMessage`;
     const body = JSON.stringify({
       chat_id: chatId,
@@ -45,11 +43,25 @@ export default function handler(req, res) {
         console.error('Error al enviar mensaje:', error);
       });
 
+    // Responder a Telegram para confirmar que el callback ha sido procesado
+    const callbackUrl = `https://api.telegram.org/bot<YOUR_BOT_API_TOKEN>/answerCallbackQuery`;
+    const callbackBody = JSON.stringify({
+      callback_query_id: callback_query.id,
+      text: '¡Aquí tienes los productos del pasillo seleccionado!',
+      show_alert: false,  // Puedes poner true si deseas que se muestre una alerta
+    });
+
+    fetch(callbackUrl, {
+      method: 'POST',
+      body: callbackBody,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
     return res.status(200).send('OK');
   }
 
-  // Si el usuario envía un mensaje de texto
-  if (text === 'pasillo') {
+  // Si el mensaje recibido es "pasillo"
+  if (message && message.text.toLowerCase() === 'pasillo') {
     responseText = 'Elige un pasillo para ver los productos disponibles:';
 
     inlineKeyboard = [
@@ -65,29 +77,30 @@ export default function handler(req, res) {
         { text: 'Pasillo 5', callback_data: 'pasillo5' },
       ]
     ];
-  } else {
-    responseText = '¿Te gustaría saber qué productos hay en algún pasillo? Escribe "pasillo" para empezar.';
-  }
 
-  // Enviar un mensaje con botones al usuario
-  const url = `https://api.telegram.org/bot<YOUR_BOT_API_TOKEN>/sendMessage`;
-  const body = JSON.stringify({
-    chat_id: chatId,
-    text: responseText,
-    reply_markup: JSON.stringify({ inline_keyboard: inlineKeyboard })
-  });
-
-  fetch(url, {
-    method: 'POST',
-    body: body,
-    headers: { 'Content-Type': 'application/json' },
-  }).then(response => response.json())
-    .then(data => {
-      console.log('Respuesta enviada:', data);
-    })
-    .catch(error => {
-      console.error('Error al enviar mensaje:', error);
+    // Enviar el mensaje con botones
+    const url = `https://api.telegram.org/bot7990224932:AAGRFRuUuuMQByEljvltdkv2ObX7po9I95I/sendMessage`;
+    const body = JSON.stringify({
+      chat_id: chatId,
+      text: responseText,
+      reply_markup: JSON.stringify({ inline_keyboard: inlineKeyboard })
     });
 
-  res.status(200).send('OK'); // Responde con un 200 OK para confirmar que el webhook fue procesado
+    fetch(url, {
+      method: 'POST',
+      body: body,
+      headers: { 'Content-Type': 'application/json' },
+    }).then(response => response.json())
+      .then(data => {
+        console.log('Respuesta enviada:', data);
+      })
+      .catch(error => {
+        console.error('Error al enviar mensaje:', error);
+      });
+
+    return res.status(200).send('OK');
+  }
+
+  // Si el mensaje no es "pasillo", responder con un mensaje de ayuda
+  res.status(200).send('OK');
 }
