@@ -1,3 +1,4 @@
+console.log("El script se ha cargado correctamente");
 const TOKEN = "7990224932:AAGRFRuUuuMQByEljvltdkv2ObX7po9I95I";
 const CHAT_ID = "810564522";
 
@@ -14,9 +15,9 @@ function enviarMensaje() {
         .then(response => response.json())
         .then(data => {
             if (data.ok) {
-                alert("Mensaje enviado a Telegram 📩");
+                alert("Mensaje enviado a Telegram");
             } else {
-                alert("Error al enviar el mensaje 😞");
+                alert("Error al enviar el mensaje");
             }
         })
         .catch(error => console.error("Error:", error));
