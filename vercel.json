@@ -6,7 +6,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "Telegrambot/**",
+      "src": "Telegrambot/public/**",
       "use": "@vercel/static"
     }
   ],
@@ -17,7 +17,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "Telegrambot/$1"
+      "dest": "Telegrambot/public/$1"
     }
   ]
 }
