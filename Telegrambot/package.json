@@ -1,8 +1,11 @@
 {
-    "name": "telegram-api",
-    "version": "1.0.0",
-    "scripts": {
-      "start": "node api/sendMessage.js"
-    }
+  "name": "telegrambot",
+  "version": "1.0.0",
+  "type": "module",  
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "scripts": {
+    "start": "node server.js"
   }
-  
+}
