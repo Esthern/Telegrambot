@@ -1,4 +1,4 @@
-console.log("El script se ha cargado correctamente ✅");
+console.log("El script se ha cargado correctamente ");
 
 document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM completamente cargado ✅");
